@@ -2,12 +2,22 @@ package fr.diginamic.hello.entytes;
 
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
 public class Ville {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
     private String nom;
     private int nbHabitants;
 	// Constructeur
+    public Ville() {
+    	
+    }
     public Ville(int id, String nom, int nbHabitants) {
     	this.id =id;
         this.nom = nom;
