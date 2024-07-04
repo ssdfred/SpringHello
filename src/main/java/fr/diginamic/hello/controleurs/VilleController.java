@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.diginamic.hello.entytes.Departement;
@@ -85,7 +86,7 @@ public class VilleController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Villes supprimer avec succès");
     }
 
-	// Méthodes spécifiques pour les départements (facultatif)
+	// Méthodes spécifiques pour les départements 
     @Autowired
     private DepartementService departementService;
     
@@ -99,5 +100,15 @@ public class VilleController {
     public List<Ville> getVillesByDepartement(@PathVariable int id) {
 
         return departementService.villesParDepartement(id);
+    }
+    @GetMapping("/{id}/villes/top/{n}")
+    public ResponseEntity<List<Ville>> getTopNVilles (@PathVariable int id, @PathVariable int n) {
+    	List<Ville> villes = departementService.findTopVilles(id, n);
+    	return ResponseEntity.ok(villes);
+    }
+    @GetMapping("/{id}/villes/population")
+    public ResponseEntity<List<Ville>> getVillesByPopulationRange (@PathVariable int id, @RequestParam int min, @RequestParam int max) {
+    	List<Ville> villes = departementService.findVillesByPopulationRange(id, min, max);
+    	return ResponseEntity.ok(villes);
     }
 }

@@ -40,4 +40,10 @@ public class DepartementService {
 	public List<Ville> villesParDepartement(int idDepartement) {
 		return villeDao.findByDepartementId(idDepartement);
 	}
+	public List<Ville> findTopVilles(int id, int n) {
+		return departementDao.findTopNVilles(id, n);
+	}
+	public List<Ville> findVillesByPopulationRange(int id, int min, int max) {
+		return departementDao.findVillesByPopulationRange(id, min, max);
+	}
 }

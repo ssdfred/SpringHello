@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 
 @Repository
 @Transactional
@@ -42,5 +43,19 @@ public class DepartementDao {
 
     public void delete(Departement departement) {
         em.remove(departement);
+    }
+    public List<Ville> findTopNVilles(int id, int n) {
+        TypedQuery<Ville> query = em.createQuery("SELECT v FROM Ville v WHERE v.departement.id = :departementId ORDER BY v.nbHabitants DESC", Ville.class);
+        query.setParameter("departementId", id);
+        query.setMaxResults(n);
+        return query.getResultList();
+    }
+
+    public List<Ville> findVillesByPopulationRange(int id, int min, int max) {
+        TypedQuery<Ville> query = em.createQuery("SELECT v FROM Ville v WHERE v.departement.id = :departementId AND v.nbHabitants BETWEEN :min AND :max", Ville.class);
+        query.setParameter("departementId", id);
+        query.setParameter("min", min);
+        query.setParameter("max", max);
+        return query.getResultList();
     }
 }
