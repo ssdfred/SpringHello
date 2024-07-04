@@ -8,12 +8,10 @@ public class Departement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     private String nom;
 
-    @OneToMany
-    private List<Ville> villes;
 
     public Departement() {
     	
@@ -21,24 +19,25 @@ public class Departement {
 	/** Constructeur
 	 * @param id
 	 * @param nom
-	 * 
+	 * @param villes
 	 */
-	public Departement(Long id, String nom) {
+	public Departement(int id, String nom ) {
 		super();
 		this.id = id;
 		this.nom = nom;
+		
 		
 	}
 	/** Getter pour id
 	 * @return the id 
 	*/
-	public Long getId() {
+	public int getId() {
 		return id;
 	}
 	/** Setter pour id
 	 * @param id
 	 */
-	public void setId(Long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	/** Getter pour nom
@@ -53,17 +52,6 @@ public class Departement {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
-	/** Getter pour villes
-	 * @return the villes 
-	*/
-	public List<Ville> getVilles() {
-		return villes;
-	}
-	/** Setter pour villes
-	 * @param villes
-	 */
-	public void setVilles(List<Ville> villes) {
-		this.villes = villes;
-	}
+
 
 }

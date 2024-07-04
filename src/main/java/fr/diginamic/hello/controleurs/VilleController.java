@@ -1,14 +1,11 @@
 package fr.diginamic.hello.controleurs;
 
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +15,7 @@ import fr.diginamic.hello.entytes.Departement;
 import fr.diginamic.hello.entytes.Ville;
 import fr.diginamic.hello.service.DepartementService;
 import fr.diginamic.hello.service.VilleService;
-
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,13 +47,21 @@ public class VilleController {
     }
 
     @PostMapping
-    public ResponseEntity<Ville> ajouterVille(@RequestBody Ville ville) {
+    public ResponseEntity<String> ajouterVille(@Valid @RequestBody Ville ville, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body("Les données passées en paramètre sont incorrectes");
+        }
+
         Ville nouvelleVille = villeService.ajouterVilleAvecDepartement(ville, ville.getDepartement().getNom());
-        return ResponseEntity.status(HttpStatus.CREATED).body(nouvelleVille);
+        if (nouvelleVille == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'ajout de la ville");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Ville insérée avec succès");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Ville> updateVille(@PathVariable int id,@RequestBody Ville villeModifiee, BindingResult result) {
+    public ResponseEntity<String> updateVille(@PathVariable int id,@RequestBody Ville villeModifiee, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
@@ -64,20 +69,20 @@ public class VilleController {
         Ville updatedVille = villeService.updateVille(id, villeModifiee);
         
         if (updatedVille == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("Les données passées en paramètre sont incorrectes");
         }
 
-        return ResponseEntity.ok().body(updatedVille);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Villes modifiée avec succès");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteVille(@PathVariable int id) {
+    public ResponseEntity<String> deleteVille(@PathVariable int id) {
         Ville ville = villeService.getVilleById(id);
         if (ville == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("Les données passées en paramètre sont incorrectes");
         }
         villeService.deleteVille(ville);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("Villes supprimer avec succès");
     }
 
 	// Méthodes spécifiques pour les départements (facultatif)
