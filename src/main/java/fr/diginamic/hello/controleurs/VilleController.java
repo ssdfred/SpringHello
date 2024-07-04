@@ -14,9 +14,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.diginamic.hello.entytes.Departement;
 import fr.diginamic.hello.entytes.Ville;
+import fr.diginamic.hello.service.DepartementService;
 import fr.diginamic.hello.service.VilleService;
-import jakarta.validation.Valid;
+
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,52 +32,67 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class VilleController {
 
 	@Autowired
-	private VilleService villeService;
+    private VilleService villeService;
 
-	private List<Ville> villes = new ArrayList<>();
-
-	// Constructeur pour initialiser les villes
-	public VilleController() {
-
-		villes.add(new Ville(1, "Paris", 2148000));
-		villes.add(new Ville(2, "Lyon", 515695));
-		villes.add(new Ville(3, "Marseille", 861635));
-	}
-
-	@GetMapping
-	public List<Ville> getVilles() {
-		return villeService.extractVilles();
-	}
-
-    @PostMapping
-    public ResponseEntity<String> insertVilles(@Valid @RequestBody List<Ville> nvVilles, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body("Les données passées en paramètre sont incorrectes");
-        }
-
-        villeService.insertVilles(nvVilles);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Villes insérées avec succès");
+    @GetMapping
+    public ResponseEntity<List<Ville>> getAllVilles() {
+        List<Ville> villes = villeService.getAllVilles();
+        return ResponseEntity.ok().body(villes);
     }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<Ville> chercheVille(@PathVariable int id) {
-		Optional<Ville> ville = villes.stream().filter(v -> v.getId() == id).findFirst();
-		if (ville.isPresent()) {
-			return ResponseEntity.ok(ville.get());
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
-	}
+    @GetMapping("/{id}")
+    public ResponseEntity<Ville> getVilleById(@PathVariable int id) {
+        Ville ville = villeService.getVilleById(id);
+        if (ville == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(ville);
+    }
 
-	@PutMapping("/{id}")
-	public ResponseEntity<String> updateVille(@PathVariable int id, @RequestBody Ville updatedVille) {
-		List<Ville> villes = villeService.modifierVille(id, updatedVille);
-		return ResponseEntity.ok("Ville mise à jour avec succès");
-	}
+    @PostMapping
+    public ResponseEntity<Ville> ajouterVille(@RequestBody Ville ville) {
+        Ville nouvelleVille = villeService.ajouterVilleAvecDepartement(ville, ville.getDepartement().getNom());
+        return ResponseEntity.status(HttpStatus.CREATED).body(nouvelleVille);
+    }
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteVille(@PathVariable int id) {
-		List<Ville> villes = villeService.supprimerVille(id);
-		return ResponseEntity.ok("Ville supprimée avec succès");
-	}
+    @PutMapping("/{id}")
+    public ResponseEntity<Ville> updateVille(@PathVariable int id,@RequestBody Ville villeModifiee, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Ville updatedVille = villeService.updateVille(id, villeModifiee);
+        
+        if (updatedVille == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().body(updatedVille);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteVille(@PathVariable int id) {
+        Ville ville = villeService.getVilleById(id);
+        if (ville == null) {
+            return ResponseEntity.notFound().build();
+        }
+        villeService.deleteVille(ville);
+        return ResponseEntity.noContent().build();
+    }
+
+	// Méthodes spécifiques pour les départements (facultatif)
+    @Autowired
+    private DepartementService departementService;
+    
+    @GetMapping("/departements")
+    public ResponseEntity<List<Departement>> getAllDepartements() {
+    	List<Departement> departements = departementService.getAllDepartements();
+    	return ResponseEntity.ok().body(departements);
+    }
+
+    @GetMapping("/departements/{id}/villes")
+    public List<Ville> getVillesByDepartement(@PathVariable int id) {
+
+        return departementService.villesParDepartement(id);
+    }
 }

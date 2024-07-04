@@ -4,64 +4,59 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
-//import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-//import fr.diginamic.hello.VilleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import fr.diginamic.hello.entytes.Departement;
+import fr.diginamic.hello.entytes.DepartementDao;
 import fr.diginamic.hello.entytes.Ville;
+import fr.diginamic.hello.entytes.VilleDao;
+
+
 @Service
+@Transactional
 public class VilleService {
 
-    private List<Ville> villes = new ArrayList<>();
+	 @Autowired
+	    private VilleDao villeDao;
 
-    public List<Ville> extractVilles() {
-        return villes;
-    }
+	    @Autowired
+	    private DepartementDao departementDao;
+	    
+	    public Ville ajouterVilleAvecDepartement(Ville ville, String nomDepartement) {
+	        Departement departement = departementDao.findByNom(nomDepartement);
+	        if (departement == null) {
+	            departement = new Departement();
+	            departement.setNom(nomDepartement);
+	            departementDao.save(departement);
+	        }
+	        ville.setDepartement(departement);
+	        return villeDao.save(ville);
+	    }
+	    public List<Ville> getAllVilles() {
+	        return villeDao.findAll();
+	    }
 
-    public Ville extractVille(int id) {
-        Optional<Ville> ville = villes.stream().filter(v -> v.getId() == id).findFirst();
-        return ville.orElse(null);
-    }
+	    public Ville getVilleById(int id) {
+	        return villeDao.findById(id);
+	    }
 
-    public List<Ville> insertVille(Ville ville) {
-        Optional<Ville> existingVille = villes.stream().filter(v -> v.getNom().equals(ville.getNom())).findFirst();
-        if (existingVille.isPresent()) {
-            throw new RuntimeException("La ville existe déjà");
-        }
-        villes.add(ville);
-        return villes;
-    }
+	    public Ville createVille(Ville ville) {
+	        return villeDao.save(ville);
+	    }
 
-    public List<Ville> insertVilles(List<Ville> nvVilles) {
-        for (Ville ville : nvVilles) {
-            Optional<Ville> existingVille = villes.stream().filter(v -> v.getNom().equals(ville.getNom())).findFirst();
-            if (existingVille.isPresent()) {
-                throw new RuntimeException("La ville " + ville.getNom() + " existe déjà");
-            }
-        }
-        villes.addAll(nvVilles);
-        return villes;
-    }
+	    public Ville updateVille(int id, Ville ville) {
+	        return villeDao.update(ville);
+	    }
 
-    public List<Ville> modifierVille(int id, Ville updatedVille) {
-        Optional<Ville> existingVille = villes.stream().filter(v -> v.getId() == id).findFirst();
-        if (existingVille.isPresent()) {
-            Ville ville = existingVille.get();
-            ville.setNom(updatedVille.getNom());
-            ville.setNbHabitants(updatedVille.getNbHabitants());
-            return villes;
-        } else {
-            return null;
-        }
-    }
+	    public void deleteVille(Ville ville) {
+	        villeDao.delete(ville);
+	    }
+	    public List<Ville> villesParDepartement(int departementId) {
+	        return villeDao.findByDepartementId(departementId);
+	    }
 
-    public List<Ville> supprimerVille(int id) {
-        Optional<Ville> existingVille = villes.stream().filter(v -> v.getId() == id).findFirst();
-        if (existingVille.isPresent()) {
-            villes.remove(existingVille.get());
-            return villes;
-        } else {
-            return null;
-        }
-    }
-}
+	
+	}

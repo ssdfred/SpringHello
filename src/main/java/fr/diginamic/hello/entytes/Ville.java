@@ -2,32 +2,33 @@ package fr.diginamic.hello.entytes;
 
 
 
-//import jakarta.persistence.Entity;
-//import jakarta.persistence.GeneratedValue;
-//import jakarta.persistence.GenerationType;
-//import jakarta.persistence.Id;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 
-
-//@Entity
+@Entity
 public class Ville {
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Min (1)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@Min (1)
 	private int id;
-	@Size(min=2, max=100)
-	@NotNull
+//	@Size(min=2, max=100)
+//	@NotNull
     private String nom;
 	
-	@Min(1)
+	//@Min(1)
     private int nbHabitants;
 	// Constructeur
     public Ville() {
     	
     }
+    @ManyToOne
+    @JoinColumn(name = "departement_id")
+    private Departement departement;
     public Ville(int id, String nom, int nbHabitants) {
     	this.id =id;
         this.nom = nom;
@@ -63,6 +64,20 @@ public class Ville {
 	 */
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	/** Getter pour departement
+	 * @return the departement 
+	*/
+	public Departement getDepartement() {
+		return departement;
+	}
+
+	/** Setter pour departement
+	 * @param departement
+	 */
+	public void setDepartement(Departement departement) {
+		this.departement = departement;
 	}
 
 
