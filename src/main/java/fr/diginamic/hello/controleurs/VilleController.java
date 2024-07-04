@@ -2,17 +2,21 @@ package fr.diginamic.hello.controleurs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.diginamic.hello.entytes.Ville;
 import fr.diginamic.hello.service.VilleService;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,11 +47,15 @@ public class VilleController {
 		return villeService.extractVilles();
 	}
 
-	@PostMapping
-	public ResponseEntity<String> insertVille(@RequestBody Ville nvVille) {
-		List<Ville> villes = villeService.insertVille(nvVille);
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	}
+    @PostMapping
+    public ResponseEntity<String> insertVilles(@Valid @RequestBody List<Ville> nvVilles, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body("Les données passées en paramètre sont incorrectes");
+        }
+
+        villeService.insertVilles(nvVilles);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Villes insérées avec succès");
+    }
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Ville> chercheVille(@PathVariable int id) {

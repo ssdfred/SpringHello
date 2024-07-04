@@ -1,18 +1,28 @@
 package fr.diginamic.hello.entytes;
 
-import org.springframework.stereotype.Component;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
-@Entity
+//import jakarta.persistence.Entity;
+//import jakarta.persistence.GeneratedValue;
+//import jakarta.persistence.GenerationType;
+//import jakarta.persistence.Id;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+
+
+//@Entity
 public class Ville {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Min (1)
 	private int id;
+	@Size(min=2, max=100)
+	@NotNull
     private String nom;
+	
+	@Min(1)
     private int nbHabitants;
 	// Constructeur
     public Ville() {
