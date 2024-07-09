@@ -1,4 +1,4 @@
-package fr.diginamic.hello.entytes;
+package fr.diginamic.entities;
 
 import java.util.List;
 
