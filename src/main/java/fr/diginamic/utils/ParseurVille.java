@@ -53,7 +53,6 @@ public class ParseurVille {
 		Departement departement1 = new Departement();
 		departement1.setNom(nomRegion);
 		departement1.setCode(codeDepartement);
-		departement1.setPopulation(populationTotale);
 		departement1.addVille(ville);
 
 	

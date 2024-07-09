@@ -1,15 +1,14 @@
 package fr.diginamic.entities;
 
-import jakarta.persistence.*;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.hibernate.sql.ast.tree.from.MappedByTableGroup;
-
-import com.opencsv.bean.FieldMapByName;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Departement {
@@ -22,10 +21,9 @@ public class Departement {
 	/** code : String */
 	private String code;
 	/** population : int */
-	private int population;
-	
-	@OneToMany(mappedBy ="departement", cascade = CascadeType.ALL)
-	
+
+	@OneToMany(mappedBy = "departement", cascade = CascadeType.ALL)
+
 	private List<Ville> villes = new ArrayList<>();
 
 	public Departement() {
@@ -45,22 +43,20 @@ public class Departement {
 
 	}
 
-
 	/**
 	 * Ajoute une ville
 	 * 
 	 * @param ville ville
 	 */
-    public void addVille(Ville ville) {
-        ((List<Ville>) villes).add(ville);
-        ville.setDepartement(this);
-    }
+	public void addVille(Ville ville) {
+		((List<Ville>) villes).add(ville);
+		ville.setDepartement(this);
+	}
 
-    public void removeVille(Ville ville) {
-        ((List<Ville>) villes).remove(ville);
-        ville.setDepartement(null);
-    }
-
+	public void removeVille(Ville ville) {
+		((List<Ville>) villes).remove(ville);
+		ville.setDepartement(null);
+	}
 
 	/**
 	 * Getter pour id
@@ -98,26 +94,6 @@ public class Departement {
 		this.nom = nom;
 	}
 
- 
-
-	/**
-	 * Getter pour population
-	 * 
-	 * @return the population
-	 */
-	public int getPopulation() {
-		return population;
-	}
-
-	/**
-	 * Setter pour population
-	 * 
-	 * @param population
-	 */
-	public void setPopulation(int population) {
-		this.population = population;
-	}
-
 	/**
 	 * Getter pour code
 	 * 
@@ -136,22 +112,22 @@ public class Departement {
 		this.code = code;
 	}
 
-	/** Getter pour villes
-	 * @return the villes 
-	*/
+	/**
+	 * Getter pour villes
+	 * 
+	 * @return the villes
+	 */
 	public List<Ville> getVilles() {
 		return villes;
 	}
 
-	/** Setter pour villes
+	/**
+	 * Setter pour villes
+	 * 
 	 * @param villes
 	 */
 	public void setVilles(List<Ville> villes) {
 		this.villes = villes;
 	}
-
-
-
-
 
 }

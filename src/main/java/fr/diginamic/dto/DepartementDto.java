@@ -4,62 +4,25 @@ package fr.diginamic.dto;
  * 
  */
 public class DepartementDto {
+    private String code;
+    private String nom;
 
-	private String code;
-	private String name;
-	private int population;
+    // getters and setters
+    public String getCode() {
+        return code;
+    }
 
-	/**
-	 * Getter pour code
-	 * 
-	 * @return the code
-	 */
-	public String getCode() {
-		return code;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	/**
-	 * Setter pour code
-	 * 
-	 * @param code
-	 */
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public String getNom() {
+        return nom;
+    }
 
-	/**
-	 * Getter pour name
-	 * 
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
 
-	/**
-	 * Setter pour name
-	 * 
-	 * @param name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
 
-	/**
-	 * Getter pour population
-	 * 
-	 * @return the population
-	 */
-	public int getPopulation() {
-		return population;
-	}
-
-	/**
-	 * Setter pour population
-	 * 
-	 * @param population
-	 */
-	public void setPopulation(int population) {
-		this.population = population;
-	}
 }

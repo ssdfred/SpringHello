@@ -9,29 +9,63 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+
 
 @Controller
 public class CustomErrorController implements ErrorController {
 
-    @RequestMapping("/error")
-    public ResponseEntity<Map<String, Object>> handleError(HttpServletRequest request) {
-        Map<String, Object> errorAttributes = getErrorAttributes(request);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorAttributes);
-    }
+	 @RequestMapping("/error")
+	    public ResponseEntity<ErrorDetails> handleError(HttpServletRequest request) {
+	        ErrorDetails errorDetails = new ErrorDetails(
+	                LocalDateTime.now(),
+	                HttpStatus.NOT_FOUND.value(),
+	                HttpStatus.NOT_FOUND.getReasonPhrase(),
+	                "Page not found",
+	                request.getRequestURI()
+	        );
 
-    private Map<String, Object> getErrorAttributes(HttpServletRequest request) {
-        Map<String, Object> errorAttributes = new HashMap<>();
-        errorAttributes.put("timestamp", LocalDateTime.now());
-        errorAttributes.put("status", HttpStatus.NOT_FOUND.value());
-        errorAttributes.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
-        errorAttributes.put("message", "Page not found");
-        errorAttributes.put("path", request.getRequestURI());
-        return errorAttributes;
-    }
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+	    }
 
-    public String getErrorPath() {
-        return "/error";
-    }
-}
+	    public String getErrorPath() {
+	        return "/error";
+	    }
+
+	    // Modèle pour les détails d'erreur
+	    private static class ErrorDetails {
+	        private LocalDateTime timestamp;
+	        private int status;
+	        private String error;
+	        private String message;
+	        private String path;
+
+	        public ErrorDetails(LocalDateTime timestamp, int status, String error, String message, String path) {
+	            this.timestamp = timestamp;
+	            this.status = status;
+	            this.error = error;
+	            this.message = message;
+	            this.path = path;
+	        }
+
+	        // Getters (pas nécessaire pour setters car les champs sont initialisés dans le constructeur)
+	        public LocalDateTime getTimestamp() {
+	            return timestamp;
+	        }
+
+	        public int getStatus() {
+	            return status;
+	        }
+
+	        public String getError() {
+	            return error;
+	        }
+
+	        public String getMessage() {
+	            return message;
+	        }
+
+	        public String getPath() {
+	            return path;
+	        }
+	    }
+	}

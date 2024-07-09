@@ -32,20 +32,20 @@ public class VilleService {
     private DepartementRepository departementRepository;
 
     @Transactional
-    public Ville ajouterVilleAvecDepartement(Ville ville, String nomDepartement) {
-        Departement departement = departementRepository.findByNom(nomDepartement).orElseGet(() -> {
-            Departement nouveauDepartement = new Departement();
-            nouveauDepartement.setNom(nomDepartement);
-            return departementRepository.save(nouveauDepartement);
-        });
-
-        if (villeRepository.findByNomAndDepartement(ville.getNom(), departement).isPresent()) {
-            throw new IllegalArgumentException("La ville existe déjà dans ce département");
-        }
-
-        ville.setDepartement(departement);
-        return villeRepository.save(ville);
-    }
+//    public Ville ajouterVilleAvecDepartement(Ville ville, String nomDepartement) {
+//        Departement departement = departementRepository.findByNom(nomDepartement).orElseGet(() -> {
+//            Departement nouveauDepartement = new Departement();
+//            nouveauDepartement.setNom(nomDepartement);
+//            return departementRepository.save(nouveauDepartement);
+//        });
+//
+//        if (villeRepository.findByNomAndDepartement(ville.getNom(), departement).isPresent()) {
+//            throw new IllegalArgumentException("La ville existe déjà dans ce département");
+//        }
+//
+//        ville.setDepartement(departement);
+//        return villeRepository.save(ville);
+//    }
 
     public List<Ville> getAllVilles() {
         return villeRepository.findAll();
@@ -73,25 +73,25 @@ public class VilleService {
         villeRepository.delete(ville);
     }
 
-    public Iterable<Ville> villesParDepartement(int departementId) {
-        return villeRepository.findByDepartementId(departementId);
-    }
-
-    public Optional<Ville> findVilleByNomAndDepartement(String nom, Departement departement) {
-        return villeRepository.findByNomAndDepartement(nom, departement);
-    }
-
-    public Iterable<Ville> findVillesByDepartementId(Integer departementId) {
-        return villeRepository.findByDepartementId(departementId);
-    }
-
-    public Iterable<Ville> findVillesByPopulationRange(int min, int max) {
-        return villeRepository.findByPopulationTotaleBetween(min, max);
-    }
-
-    public Iterable<Ville> findVillesByPopulationGreaterThan(int min) {
-        return villeRepository.findByPopulationTotaleGreaterThan(min);
-    }
+//    public Iterable<Ville> villesParDepartement(int departementId) {
+//        return villeRepository.findByDepartementId(departementId);
+//    }
+//
+//    public Optional<Ville> findVilleByNomAndDepartement(String nom, Departement departement) {
+//        return villeRepository.findByNomAndDepartement(nom, departement);
+//    }
+//
+//    public Iterable<Ville> findVillesByDepartementId(Integer departementId) {
+//        return villeRepository.findByDepartementId(departementId);
+//    }
+//
+//    public Iterable<Ville> findVillesByPopulationRange(int min, int max) {
+//        return villeRepository.findByPopulationTotaleBetween(min, max);
+//    }
+//
+//    public Iterable<Ville> findVillesByPopulationGreaterThan(int min) {
+//        return villeRepository.findByPopulationTotaleGreaterThan(min);
+//    }
 
 //    public List<Ville> findTopNVillesByDepartementId(int departementId, int n) {
 //        Pageable pageable = (Pageable) PageRequest.of(departementId, 10);

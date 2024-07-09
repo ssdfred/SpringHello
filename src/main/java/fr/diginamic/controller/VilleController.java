@@ -1,90 +1,60 @@
 package fr.diginamic.controller;
 
-import java.util.List;
-import java.util.Optional;
+import fr.diginamic.dto.VilleDto;
+import fr.diginamic.entities.Departement;
+import fr.diginamic.entities.Ville;
+import fr.diginamic.mappers.VilleMapper;
+import fr.diginamic.repository.DepartementRepository;
+import fr.diginamic.repository.VilleRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import fr.diginamic.entities.Ville;
-import fr.diginamic.repository.VilleRepository;
-import fr.diginamic.service.VilleService;
-import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/ville")
+@RequestMapping("/villes")
 public class VilleController {
-	@Autowired
-	private VilleService villeService;
+
+	private final VilleRepository villeRepository;
+	private final DepartementRepository departementRepository;
+
+	public VilleController(VilleRepository villeRepository, DepartementRepository departementRepository) {
+		this.villeRepository = villeRepository;
+		this.departementRepository = departementRepository;
+	}
 
 	@PostMapping
-	public ResponseEntity<String> ajouterVille(@Valid @RequestBody Ville ville, BindingResult result) {
-		if (result.hasErrors()) {
-			return ResponseEntity.badRequest().body("Les données passées en paramètre sont incorrectes");
-		}
+    public ResponseEntity<Object> createVille(@RequestBody VilleDto villeDto) {
+        if (villeDto.getDepartement() == null || villeDto.getDepartement().getNom() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le département et son nom sont obligatoires");
+        }
 
-		Ville nouvelleVille = villeService.ajouterVilleAvecDepartement(ville, ville.getDepartement().getNom());
-		if (nouvelleVille == null) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'ajout de la ville");
-		}
+        Departement departement = departementRepository.findByNom(villeDto.getDepartement().getNom());
 
-		return ResponseEntity.status(HttpStatus.CREATED).body("Ville insérée avec succès");
-	}
+        if (departement == null) {
+            departement = new Departement();
+            departement.setNom(villeDto.getDepartement().getNom());
+            departement.setCode(villeDto.getDepartement().getCode());
+            departement = departementRepository.save(departement);
+        }
 
-	@GetMapping
-	public ResponseEntity<List<Ville>> getAllVilles() {
-		List<Ville> villes = villeService.getAllVilles();
-		return ResponseEntity.ok(villes);
-	}
+        Ville ville = VilleMapper.toEntity(villeDto);
+        ville.setDepartement(departement);
+        ville = villeRepository.save(ville);
 
-	@GetMapping("/{id}")
-	public ResponseEntity<Ville> getVilleById(@PathVariable int id) {
-		Ville ville = villeService.getVilleById(id);
-		if (ville != null) {
-			return ResponseEntity.ok(ville);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
+        return ResponseEntity.status(HttpStatus.CREATED).body(VilleMapper.toDto(ville));
+    }
 
-	@PutMapping("/{id}")
-	public ResponseEntity<Ville> updateVille(@PathVariable int id, @RequestBody Ville ville) {
-		try {
-			Ville updatedVille = villeService.updateVille(id, ville);
-			return ResponseEntity.ok(updatedVille);
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.notFound().build();
-		}
-	}
-
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteVille(@PathVariable int id) {
-		try {
-			villeService.deleteVille(id);
-			return ResponseEntity.noContent().build();
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.notFound().build();
-		}
-	}
-
-	@GetMapping("/population/{min}")
-	public ResponseEntity<Iterable<Ville>> getVillesByPopulationGreaterThan(@PathVariable("min") int min) {
-		Iterable<Ville> villes = villeService.findVillesByPopulationGreaterThan(min);
-		return ResponseEntity.ok(villes);
-	}
-
+//	@GetMapping("/{id}/villes/filter")
+//	public ResponseEntity<List<VilleDto>> getVillesByPopulationRange(@PathVariable int id, @RequestParam int min,
+//			@RequestParam int max) {
+//		List<Ville> villes = villeRepository.findVillesByPopulationTotaleRange(id, min, max);
+//		List<VilleDto> villeDtos = villes.stream().map(VilleMapper::toDto).collect(Collectors.toList());
+//		return new ResponseEntity<>(villeDtos, HttpStatus.OK);
+//	}
 }
