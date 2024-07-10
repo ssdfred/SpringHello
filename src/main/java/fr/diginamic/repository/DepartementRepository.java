@@ -16,22 +16,28 @@ public interface DepartementRepository extends JpaRepository<Departement, Intege
 
 	Optional<Departement> findById(int id);
 
-	Optional<Departement> findByCode(String code);
+	Departement findByCode(String code);
+
 	Departement findByNom(String nom);
-	
 
-	//List<Ville> findTopNVillesByDepartementOrderByPopulationTotaleDesc(@Param("id") int id,@Param("min") int min, @Param("max") int max);
+	// List<Ville>
+	// findTopNVillesByDepartementOrderByPopulationTotaleDesc(@Param("id") int
+	// id,@Param("min") int min, @Param("max") int max);
 
-    // Méthode pour récupérer les villes d'un département triées par population totale dans une plage donnée
-    @Query("SELECT v FROM Ville v WHERE v.departement.id = :departementId AND v.populationTotale BETWEEN :min AND :max ORDER BY v.populationTotale DESC")
-    List<Ville> findVillesByPopulationTotaleRange(@Param("departementId") int departementId, @Param("min") int min, @Param("max") int max);
+	// Méthode pour récupérer les villes d'un département triées par population
+	// totale dans une plage donnée
+	@Query("SELECT v FROM Ville v WHERE v.departement.id = :departementId AND v.populationTotale BETWEEN :min AND :max ORDER BY v.populationTotale DESC")
+	List<Ville> findVillesByPopulationTotaleRange(@Param("departementId") int departementId, @Param("min") int min,
+			@Param("max") int max);
 
-    // Méthode pour récupérer les N premières villes d'un département triées par population totale
-    @Query("SELECT v FROM Ville v WHERE v.departement.id = :departementId ORDER BY v.populationTotale DESC")
-    List<Ville> findTopNVillesByDepartementOrderByPopulationTotaleDesc(@Param("departementId") int departementId);
+	// Méthode pour récupérer les N premières villes d'un département triées par
+	// population totale
+	@Query("SELECT v FROM Ville v WHERE v.departement.id = :departementId ORDER BY v.populationTotale DESC")
+	List<Ville> findTopNVillesByDepartementOrderByPopulationTotaleDesc(@Param("departementId") int departementId);
+	// List<Ville> findByCodeDepartement(String codeDepartement);
+	// Departement findByDepartementCode(String code, Departement departement);
 
 //    @Query("SELECT v FROM Ville v WHERE v.departement_id = :departement_Id ORDER BY v.populationTotale DESC")
 //    List<Ville> findTopNVillesByDepartementId(@Param("departement_Id") int departementId);
 
-	
 }

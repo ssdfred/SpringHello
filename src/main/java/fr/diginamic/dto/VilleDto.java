@@ -1,14 +1,48 @@
 package fr.diginamic.dto;
 
-/**
- * 
- */
 public class VilleDto {
+    private String codeRegion;
+    private String nomRegion;
+    private String codeDepartement;
+    private String codeVille;
     private String nom;
     private int populationTotale;
     private DepartementDto departement;
 
-    // getters and setters
+    // Getters and Setters
+
+    public String getCodeRegion() {
+        return codeRegion;
+    }
+
+    public void setCodeRegion(String codeRegion) {
+        this.codeRegion = codeRegion;
+    }
+
+    public String getNomRegion() {
+        return nomRegion;
+    }
+
+    public void setNomRegion(String nomRegion) {
+        this.nomRegion = nomRegion;
+    }
+
+    public String getCodeDepartement() {
+        return codeDepartement;
+    }
+
+    public void setCodeDepartement(String codeDepartement) {
+        this.codeDepartement = codeDepartement;
+    }
+
+    public String getCodeVille() {
+        return codeVille;
+    }
+
+    public void setCodeVille(String codeVille) {
+        this.codeVille = codeVille;
+    }
+
     public String getNom() {
         return nom;
     }

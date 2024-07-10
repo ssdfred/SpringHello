@@ -1,24 +1,15 @@
 package fr.diginamic.service;
 
-import java.awt.print.Pageable;
-import java.util.ArrayList;
 import java.util.List;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Sort;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.diginamic.entities.Departement;
-import fr.diginamic.entities.DepartementDao;
 import fr.diginamic.entities.Ville;
-import fr.diginamic.entities.VilleDao;
 import fr.diginamic.repository.DepartementRepository;
 import fr.diginamic.repository.VilleRepository;
-import jakarta.persistence.OrderBy;
 
 
 @Service
@@ -27,23 +18,27 @@ public class VilleService {
 
     @Autowired
     private VilleRepository villeRepository;
-
+    private Departement departement;
     @Autowired
     private DepartementRepository departementRepository;
 
-    @Transactional
-//    public Ville ajouterVilleAvecDepartement(Ville ville, String nomDepartement) {
-//        Departement departement = departementRepository.findByNom(nomDepartement).orElseGet(() -> {
-//            Departement nouveauDepartement = new Departement();
-//            nouveauDepartement.setNom(nomDepartement);
-//            return departementRepository.save(nouveauDepartement);
-//        });
+//    @Transactional
+//    public Ville ajouterVilleAvecDepartement(Ville ville, String codeDepartement, Departement departement) {
+//        // Recherche du département par son code
+//        Departement departement = departementRepository.findByDepartementCode(codeDepartement,  departement);
+//        if (departement == null) {
+//            throw new IllegalArgumentException("Département non trouvé avec le code: " + codeDepartement + departement);
+//        }
 //
+//        // Vérifier si la ville existe déjà dans ce département
 //        if (villeRepository.findByNomAndDepartement(ville.getNom(), departement).isPresent()) {
 //            throw new IllegalArgumentException("La ville existe déjà dans ce département");
 //        }
 //
+//        // Définir le département pour la ville
 //        ville.setDepartement(departement);
+//
+//        // Enregistrer la ville dans la base de données
 //        return villeRepository.save(ville);
 //    }
 
@@ -72,6 +67,11 @@ public class VilleService {
                 .orElseThrow(() -> new IllegalArgumentException("Ville non trouvée"));
         villeRepository.delete(ville);
     }
+
+	public List<Ville> getVillesWithPopulationGreaterThan(int populationMin) {
+		// TODO Auto-generated method stub
+		return villeRepository.findByPopulationTotaleGreaterThan(populationMin);
+	}
 
 //    public Iterable<Ville> villesParDepartement(int departementId) {
 //        return villeRepository.findByDepartementId(departementId);

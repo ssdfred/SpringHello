@@ -4,29 +4,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.diginamic.dto.DepartementDto;
+import fr.diginamic.dto.VilleDto;
 import fr.diginamic.entities.Departement;
-import fr.diginamic.entities.Ville;
+import fr.diginamic.mappers.DepartementMapper;
 import fr.diginamic.repository.DepartementRepository;
-import fr.diginamic.repository.VilleRepository;
 import fr.diginamic.utils.ParseurVille;
 import fr.diginamic.utils.RecensementUtils;
 
 import java.io.File;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class CsvFileReaderService {
 
-    private final VilleRepository villeRepository;
     private final DepartementRepository departementRepository;
     private final RecensementUtils recensementUtils;
+    private final ParseurVille parseurVille;
 
     @Autowired
-    public CsvFileReaderService(VilleRepository villeRepository, DepartementRepository departementRepository,
-                                RecensementUtils recensementUtils) {
-        this.villeRepository = villeRepository;
+    public CsvFileReaderService(DepartementRepository departementRepository,
+                                RecensementUtils recensementUtils, ParseurVille parseurVille) {
         this.departementRepository = departementRepository;
         this.recensementUtils = recensementUtils;
+        this.parseurVille = parseurVille;
     }
 
     @Transactional
@@ -35,42 +36,40 @@ public class CsvFileReaderService {
         String filePath = csvFile.getAbsolutePath();
 
         try {
-            Departement departement = recensementUtils.lire(filePath);
+            DepartementDto departementDto = recensementUtils.lire(filePath);
 
-            if (departement == null) {
+            if (departementDto == null) {
                 System.out.println("Erreur lors de la lecture du fichier CSV.");
                 return;
             }
 
-            Optional<Departement> existingDepartementOpt = departementRepository.findByCode(departement.getCode());
+            // Rechercher si le département existe déjà en base
+            Departement existingDepartement = departementRepository.findByCode(departementDto.getCode());
 
-            if (existingDepartementOpt.isPresent()) {
-                // Si le département existe déjà en base, le récupérer
-                Departement existingDepartement = existingDepartementOpt.get();
-                System.out.println("Département existant trouvé : " + existingDepartement);
+            if (existingDepartement != null) {
+                System.out.println("Département existant trouvé : " + existingDepartement.getCode());
 
-                // Fusionner les villes du département existant avec les nouvelles
-                for (Ville ville : departement.getVilles()) {
-                    if (!existingDepartement.getVilles().contains(ville)) {
-                        existingDepartement.addVille(ville);
-                        ville.setDepartement(existingDepartement); // Assurer que chaque ville référence le bon département
-                    }
+                // Mettre à jour les villes du département existant avec les nouvelles villes du DTO
+                List<VilleDto> villesDto = departementDto.getVilles();
+                for (VilleDto villeDto : villesDto) {
+                    parseurVille.ajoutVille(existingDepartement, villeDto); // Utilisation du parseur pour ajouter la ville
                 }
 
-                // Mettre à jour le département existant en base
-                departement = departementRepository.save(existingDepartement);
-                System.out.println("Département mis à jour : " + departement);
+                // Mettre à jour le nom du département si nécessaire
+                existingDepartement.setNom(departementDto.getNom());
+                existingDepartement = departementRepository.save(existingDepartement);
+                System.out.println("Département mis à jour : " + existingDepartement);
             } else {
-                // Si le département n'existe pas en base, l'enregistrer
-                departement = departementRepository.save(departement);
-                System.out.println("Nouveau département enregistré : " + departement);
-            }
+                // Enregistrer le nouveau département en base
+                Departement newDepartement = DepartementMapper.toEntity(departementDto);
+                newDepartement = departementRepository.save(newDepartement);
+                System.out.println("Nouveau département enregistré : " + newDepartement);
 
-            // Enregistrer chaque ville du département
-            for (Ville ville : departement.getVilles()) {
-                ville.setDepartement(departement); // Assure que chaque ville référence le bon département
-                villeRepository.save(ville); // Enregistrer la ville
-                System.out.println("Ville enregistrée : " + ville);
+                // Enregistrer les villes du nouveau département
+                List<VilleDto> villesDto = departementDto.getVilles();
+                for (VilleDto villeDto : villesDto) {
+                    parseurVille.ajoutVille(newDepartement, villeDto); // Utilisation du parseur pour ajouter la ville
+                }
             }
 
             System.out.println("Les données du fichier CSV ont été enregistrées avec succès.");

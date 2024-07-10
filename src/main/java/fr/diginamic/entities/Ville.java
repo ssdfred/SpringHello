@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * Représente une ville.
@@ -25,8 +27,8 @@ public class Ville  {
 	/**
 	 * Nom de la ville.
 	 */
-//	@Size(min = 2, max = 100)
-//	@NotNull
+	@Size(min = 2, max = 100)
+	@NotNull
 	private String nom;
 
 	/** codeRegion : code de la région */

@@ -1,13 +1,15 @@
 package fr.diginamic.dto;
 
-/**
- * 
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class DepartementDto {
     private String code;
     private String nom;
+    private List<VilleDto> villes = new ArrayList<>();
 
-    // getters and setters
+    // Getters and Setters
+
     public String getCode() {
         return code;
     }
@@ -24,5 +26,15 @@ public class DepartementDto {
         this.nom = nom;
     }
 
+    public List<VilleDto> getVilles() {
+        return villes;
+    }
 
+    public void setVilles(List<VilleDto> villes) {
+        this.villes = villes;
+    }
+
+    public void addVille(VilleDto villeDto) {
+        this.villes.add(villeDto);
+    }
 }

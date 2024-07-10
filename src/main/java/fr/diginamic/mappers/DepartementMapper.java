@@ -1,9 +1,11 @@
 package fr.diginamic.mappers;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import fr.diginamic.dto.DepartementDto;
 import fr.diginamic.entities.Departement;
-import fr.diginamic.entities.Ville;
 
+@Transactional
 public class DepartementMapper {
     public static DepartementDto toDto(Departement departement) {
         DepartementDto dto = new DepartementDto();

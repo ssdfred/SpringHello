@@ -1,71 +1,70 @@
 package fr.diginamic.utils;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import fr.diginamic.dto.DepartementDto;
+import fr.diginamic.dto.VilleDto;
 import fr.diginamic.entities.Departement;
 import fr.diginamic.entities.Ville;
-import fr.diginamic.repository.DepartementRepository;
+import fr.diginamic.mappers.VilleMapper;
 import fr.diginamic.repository.VilleRepository;
 
 @Component
 public class ParseurVille {
-	private final DepartementRepository departementRepository;
-	private final VilleRepository villeRepository;
 
-	@Autowired
-    public ParseurVille(DepartementRepository departementRepository,VilleRepository villeRepository) {
-        this.departementRepository = departementRepository;
+    private final VilleRepository villeRepository;
+
+    @Autowired
+    public ParseurVille(VilleRepository villeRepository) {
         this.villeRepository = villeRepository;
-        
     }
 
-	/**
-	 * Ajoute une ligne représentant une ville
-	 * 
-	 * @param departement
-	 * @param ligne       ligne de laquelle on extrait une ville
-	 */
-	public void ajoutLigne(Departement departement, String ligne) {
-		String[] morceaux = ligne.split(";");
-		String codeRegion = morceaux[0];
-		String nomRegion = morceaux[1];
-		String codeDepartement = morceaux[2];
-		String codeCommune = morceaux[5];
-		String nomCommune = morceaux[6];
-		String population = morceaux[7];
-		int populationTotale = Integer.parseInt(population.replace(" ", "").trim());
+    /**
+     * Adds a Ville entity to the specified Departement.
+     *
+     * @param departement The departement to which the Ville should be added.
+     * @param villeDto    The Ville DTO containing the data to be added.
+     */
+    public void ajoutVille(Departement departement, VilleDto villeDto) {
+        // Validate city name length
+        if (villeDto.getNom().length() < 2 || villeDto.getNom().length() > 100) {
+            System.out.println("Invalid city name length: " + villeDto.getNom());
+            return;
+        }
 
-		// On crée maintenant la ville avec toutes ses données
-		Ville ville = new Ville(codeRegion, nomRegion, codeDepartement, codeCommune, nomCommune, populationTotale);
+        Ville ville = VilleMapper.toEntity(villeDto);
+        ville.setDepartement(departement);
+        villeRepository.save(ville);
+    }
 
-		//
-		ville.setCodeRegion(codeRegion);
-		ville.setNomRegion(nomRegion);
-		ville.setCodeDepartement(codeDepartement);
-		ville.setCodeVille(codeCommune);
-		ville.setNom(nomCommune);
-		ville.setPopulationTotale(populationTotale);
+    /**
+     * Adds a line representing a city to the specified DepartementDto.
+     *
+     * @param departementDto The DepartementDto to which the city should be added.
+     * @param ligne          The line from which we extract the city data.
+     */
+    public void ajoutLigne(DepartementDto departementDto, String ligne) {
+        String[] morceaux = ligne.split(";");
+        String codeRegion = morceaux[0];
+        String nomRegion = morceaux[1];
+        String codeDepartement = morceaux[2];
+        String codeCommune = morceaux[5];
+        String nomCommune = morceaux[6];
+        String population = morceaux[7];
+        int populationTotale = Integer.parseInt(population.replace(" ", "").trim());
 
-		// On ajoute les departements
-		Departement departement1 = new Departement();
-		departement1.setNom(nomRegion);
-		departement1.setCode(codeDepartement);
-		departement1.addVille(ville);
+        // Now create the VilleDto with all its data
+        VilleDto villeDto = new VilleDto();
+        villeDto.setCodeRegion(codeRegion);
+        villeDto.setNomRegion(nomRegion);
+        villeDto.setCodeDepartement(codeDepartement);
+        villeDto.setCodeVille(codeCommune);
+        villeDto.setNom(nomCommune);
+        villeDto.setPopulationTotale(populationTotale);
+        villeDto.setDepartement(departementDto);
 
-	
-	    // Enregistrement de la ville en base de données
-	    try {
-	        villeRepository.save(ville);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-		try {
-			departementRepository.save(departement1);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        // Add the VilleDto to the DepartementDto
+        departementDto.addVille(villeDto);
+    }
 }
