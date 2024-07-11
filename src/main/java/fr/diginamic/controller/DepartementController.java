@@ -35,6 +35,7 @@ import fr.diginamic.mappers.DepartementMapper;
 import fr.diginamic.mappers.VilleMapper;
 import fr.diginamic.repository.DepartementRepository;
 import fr.diginamic.repository.VilleRepository;
+import fr.diginamic.service.DepartementService;
 import fr.diginamic.service.ExportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -46,6 +47,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequestMapping("/departements")
 public class DepartementController {
 
+	private DepartementService departementService;
     private final DepartementRepository departementRepository;
     private final VilleRepository villeRepository;
     @Autowired
@@ -76,11 +78,10 @@ public class DepartementController {
         }
     }
 
-    @PostMapping
-    public DepartementDto createDepartement(@RequestBody DepartementDto departementDto) {
-        Departement departement = DepartementMapper.toEntity(departementDto);
-        Departement savedDepartement = departementRepository.save(departement);
-        return DepartementMapper.toDto(savedDepartement);
+    @PostMapping("/ajouter")
+    public ResponseEntity<String> ajouterDepartements(@RequestBody List<DepartementDto> departementDtos) {
+        departementService.ajouterDepartements(departementDtos);
+        return ResponseEntity.ok("Départements ajoutés avec succès");
     }
 
     @PutMapping("/{id}")
@@ -134,6 +135,11 @@ public class DepartementController {
 //        pdfExportService.exportDepartementToPDF(codeDepartement);
 //        return new ResponseEntity<>("Export PDF en cours", HttpStatus.OK);
 //    }
+    @Operation(summary = "Permet d'exporter la liste des villes d'un departement")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Retourne la liste des villes du departement en PDF", content = {
+					@Content(mediaType = "application/json", schema = @Schema(implementation = VilleDto.class)) }),
+			@ApiResponse(responseCode = "400", description = "Si une règle métier n'est pas respectée.", content = @Content) })
     @GetMapping("/export/pdf/{codeDepartement}")
     public void ficheVille(@PathVariable String codeDepartement, HttpServletResponse response) throws IOException, DocumentException {
         response.setHeader("Content-Disposition", "attachment; filename=\"departement.pdf\"");

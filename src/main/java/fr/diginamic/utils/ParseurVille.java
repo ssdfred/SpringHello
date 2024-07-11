@@ -20,29 +20,32 @@ public class ParseurVille {
         this.villeRepository = villeRepository;
     }
 
+    
+    
     /**
-     * Adds a Ville entity to the specified Departement.
+     * Ajoute une entité Ville au département spécifié.
      *
-     * @param departement The departement to which the Ville should be added.
-     * @param villeDto    The Ville DTO containing the data to be added.
+     * @param departement Le département auquel la ville doit être ajoutée.
+     * @param villeDto    Le DTO Ville contenant les données à ajouter.
      */
     public void ajoutVille(Departement departement, VilleDto villeDto) {
-        // Validate city name length
+        // Valider la longueur du nom de la ville
         if (villeDto.getNom().length() < 2 || villeDto.getNom().length() > 100) {
-            System.out.println("Invalid city name length: " + villeDto.getNom());
+            System.out.println("Longueur de nom de ville invalide : " + villeDto.getNom());
             return;
         }
 
         Ville ville = VilleMapper.toEntity(villeDto);
         ville.setDepartement(departement);
         villeRepository.save(ville);
+        System.out.println("Ville enregistrée : " + ville.getNom() + " dans le département : " + departement.getCode());
     }
 
     /**
-     * Adds a line representing a city to the specified DepartementDto.
+     * Ajoute une ligne représentant une ville au DTO du département spécifié.
      *
-     * @param departementDto The DepartementDto to which the city should be added.
-     * @param ligne          The line from which we extract the city data.
+     * @param departementDto Le DTO du département auquel la ville doit être ajoutée.
+     * @param ligne          La ligne à partir de laquelle nous extrayons les données de la ville.
      */
     public void ajoutLigne(DepartementDto departementDto, String ligne) {
         String[] morceaux = ligne.split(";");
@@ -54,7 +57,7 @@ public class ParseurVille {
         String population = morceaux[7];
         int populationTotale = Integer.parseInt(population.replace(" ", "").trim());
 
-        // Now create the VilleDto with all its data
+        // Créer maintenant le VilleDto avec toutes ses données
         VilleDto villeDto = new VilleDto();
         villeDto.setCodeRegion(codeRegion);
         villeDto.setNomRegion(nomRegion);
@@ -62,9 +65,13 @@ public class ParseurVille {
         villeDto.setCodeVille(codeCommune);
         villeDto.setNom(nomCommune);
         villeDto.setPopulationTotale(populationTotale);
-        villeDto.setDepartement(departementDto);
 
-        // Add the VilleDto to the DepartementDto
+        // Ajouter le VilleDto au DepartementDto
+        departementDto.setCode(codeDepartement);
+        departementDto.setNom(nomRegion);
         departementDto.addVille(villeDto);
+
+        // Log des détails de la ville extraite
+        System.out.println("Ville extraite : " + nomCommune + " dans le département : " + codeDepartement);
     }
 }

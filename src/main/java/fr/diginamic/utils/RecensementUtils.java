@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fr.diginamic.dto.DepartementDto;
-import fr.diginamic.dto.VilleDto;
 
 @Component
 public class RecensementUtils {
@@ -34,12 +33,13 @@ public class RecensementUtils {
             }
 
             for (String ligne : lignes) {
+                System.out.println("Traitement de la ligne : " + ligne);
                 parseurVille.ajoutLigne(departementDto, ligne);
             }
             return departementDto;
 
         } catch (IOException e) {
-            System.out.println("Erreur lors de la lecture du fichier: " + e.getMessage());
+            System.out.println("Erreur lors de la lecture du fichier : " + e.getMessage());
             throw new RuntimeException("Erreur lors de la lecture du fichier", e);
         }
     }

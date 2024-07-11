@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -89,12 +90,17 @@ public class VilleController {
 		return new ResponseEntity<>(savedVilleDto, HttpStatus.CREATED);
 	}
 
-//	@GetMapping("/{id}/villes/filter")
-//	public ResponseEntity<List<VilleDto>> getVillesByPopulationRange(@PathVariable int id, @RequestParam int min,
-//			@RequestParam int max) {
-//		List<Ville> villes = villeRepository.findVillesByPopulationTotaleRange(id, min, max);
-//		List<VilleDto> villeDtos = villes.stream().map(VilleMapper::toDto).collect(Collectors.toList());
-//		return new ResponseEntity<>(villeDtos, HttpStatus.OK);
-//	}
-	
+	@Operation(summary = "Permet d'obetenir la liste des villes en indiquant un min et un max")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Retourne la liste des villes comprise entre un min et un max", content = {
+					@Content(mediaType = "application/json", schema = @Schema(implementation = VilleDto.class)) }),
+			@ApiResponse(responseCode = "400", description = "Si une règle métier n'est pas respectée.", content = @Content) })
+	@GetMapping("/{id}/villes/filter")
+	public ResponseEntity<List<VilleDto>> getVillesByPopulationRange(@PathVariable int id, @RequestParam int min,
+			@RequestParam int max) {
+		List<Ville> villes = villeRepository.findVillesByPopulationTotaleRange(id, min, max);
+		List<VilleDto> villeDtos = villes.stream().map(VilleMapper::toDto).collect(Collectors.toList());
+		return  ResponseEntity.ok().body(villeDtos);
+	}
+	 
 }

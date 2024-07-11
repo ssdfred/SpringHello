@@ -43,6 +43,9 @@ public class CsvFileReaderService {
                 return;
             }
 
+            // Log des détails du département
+            System.out.println("Traitement du département : " + departementDto.getCode());
+
             // Rechercher si le département existe déjà en base
             Departement existingDepartement = departementRepository.findByCode(departementDto.getCode());
 
@@ -52,6 +55,7 @@ public class CsvFileReaderService {
                 // Mettre à jour les villes du département existant avec les nouvelles villes du DTO
                 List<VilleDto> villesDto = departementDto.getVilles();
                 for (VilleDto villeDto : villesDto) {
+                    System.out.println("Ajout de la ville " + villeDto.getNom() + " au département existant " + existingDepartement.getCode());
                     parseurVille.ajoutVille(existingDepartement, villeDto); // Utilisation du parseur pour ajouter la ville
                 }
 
@@ -68,6 +72,7 @@ public class CsvFileReaderService {
                 // Enregistrer les villes du nouveau département
                 List<VilleDto> villesDto = departementDto.getVilles();
                 for (VilleDto villeDto : villesDto) {
+                    System.out.println("Ajout de la ville " + villeDto.getNom() + " au nouveau département " + newDepartement.getCode());
                     parseurVille.ajoutVille(newDepartement, villeDto); // Utilisation du parseur pour ajouter la ville
                 }
             }
