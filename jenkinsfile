@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/ssdfred/SpringHello'
+                git 'https://github.com/ssdfred/SpringHello.git'
             }
         }
         stage('Build') {
