@@ -19,12 +19,12 @@ public class VilleMapper {
 
     public static Ville toEntity(VilleDto villeDto) {
         Ville ville = new Ville();
-        ville.setNom(villeDto.getNom());
-        ville.setPopulationTotale(villeDto.getPopulationTotale());
         ville.setCodeRegion(villeDto.getCodeRegion());
         ville.setNomRegion(villeDto.getNomRegion());
         ville.setCodeDepartement(villeDto.getCodeDepartement());
         ville.setCodeVille(villeDto.getCodeVille());
+        ville.setNom(villeDto.getNom());
+        ville.setPopulationTotale(villeDto.getPopulationTotale());
         return ville;
     }
 }

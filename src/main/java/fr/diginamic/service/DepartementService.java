@@ -20,7 +20,7 @@ public class DepartementService {
 
     @Autowired
     private DepartementRepository departementRepository;
-
+    @Transactional
     public void ajouterDepartements(List<DepartementDto> departementDtos) {
         for (DepartementDto dto : departementDtos) {
             Departement departement = DepartementMapper.toEntity(dto);
@@ -49,5 +49,25 @@ public class DepartementService {
                 departement.getVilles().add(ville);
             }
         }
+    }
+    @Transactional
+    public Departement createDepartement(Departement departement) {
+        return departementRepository.save(departement);
+    }
+    @Transactional
+    public Departement updateDepartement(int id, Departement departement) {
+        Departement departementExistante = departementRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("departement non trouvée"));
+        departementExistante.setNom(departement.getNom());
+        departementExistante.setCode(departement.getCode()); 
+        return departementRepository.save(departementExistante);
+    }
+
+
+    public List<Departement> getAllDepartement() {
+        return departementRepository.findAll();
+    }
+    public void  deleteDepartement(int id) {
+    	departementRepository.deleteById(id);
     }
 }

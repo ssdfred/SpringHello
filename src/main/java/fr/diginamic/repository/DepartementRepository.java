@@ -37,6 +37,8 @@ public interface DepartementRepository extends JpaRepository<Departement, Intege
 	// List<Ville> findByCodeDepartement(String codeDepartement);
 	// Departement findByDepartementCode(String code, Departement departement);
 
+	//Departement findByDepartementCode(String code, Departement departement);
+
 //    @Query("SELECT v FROM Ville v WHERE v.departement_id = :departement_Id ORDER BY v.populationTotale DESC")
 //    List<Ville> findTopNVillesByDepartementId(@Param("departement_Id") int departementId);
 

@@ -8,16 +8,20 @@ import fr.diginamic.dto.VilleDto;
 import fr.diginamic.entities.Departement;
 import fr.diginamic.entities.Ville;
 import fr.diginamic.mappers.VilleMapper;
+import fr.diginamic.repository.DepartementRepository;
 import fr.diginamic.repository.VilleRepository;
+import fr.diginamic.service.DepartementService;
 
 @Component
 public class ParseurVille {
 
     private final VilleRepository villeRepository;
+    private final DepartementRepository departementRepository;
 
     @Autowired
-    public ParseurVille(VilleRepository villeRepository) {
+    public ParseurVille(VilleRepository villeRepository, DepartementRepository departementRepository) {
         this.villeRepository = villeRepository;
+        this.departementRepository = departementRepository;
     }
 
     
@@ -38,7 +42,28 @@ public class ParseurVille {
         Ville ville = VilleMapper.toEntity(villeDto);
         ville.setDepartement(departement);
         villeRepository.save(ville);
-        System.out.println("Ville enregistrée : " + ville.getNom() + " dans le département : " + departement.getCode());
+        //System.out.println("Ville enregistrée : " + ville.getNom() + " dans le département : " + departement.getCode());
+    }
+    /**
+     * Ajoute un département et ses villes à partir d'un DTO du département.
+     *
+     * @param departementDto Le DTO du département contenant les données à ajouter.
+     */
+    public void ajoutDepartementEtVilles(DepartementDto departementDto) {
+        try {
+            Departement departement = new Departement();
+            departement.setCode(departementDto.getCode());
+            departement.setNom(departementDto.getNom());
+            departement = departementRepository.save(departement);
+            System.out.println("Département enregistré : " + departement.getCode());
+
+            for (VilleDto villeDto : departementDto.getVilles()) {
+                ajoutVille(departement, villeDto);
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'enregistrement du département " + departementDto.getCode() + " : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -49,29 +74,40 @@ public class ParseurVille {
      */
     public void ajoutLigne(DepartementDto departementDto, String ligne) {
         String[] morceaux = ligne.split(";");
+        if (morceaux.length < 8) {
+            System.err.println("Ligne incorrecte : " + ligne);
+            return;
+        }
         String codeRegion = morceaux[0];
         String nomRegion = morceaux[1];
         String codeDepartement = morceaux[2];
         String codeCommune = morceaux[5];
         String nomCommune = morceaux[6];
         String population = morceaux[7];
-        int populationTotale = Integer.parseInt(population.replace(" ", "").trim());
 
-        // Créer maintenant le VilleDto avec toutes ses données
-        VilleDto villeDto = new VilleDto();
-        villeDto.setCodeRegion(codeRegion);
-        villeDto.setNomRegion(nomRegion);
-        villeDto.setCodeDepartement(codeDepartement);
-        villeDto.setCodeVille(codeCommune);
-        villeDto.setNom(nomCommune);
-        villeDto.setPopulationTotale(populationTotale);
+        try {
+            int populationTotale = Integer.parseInt(population.replace(" ", "").trim());
 
-        // Ajouter le VilleDto au DepartementDto
-        departementDto.setCode(codeDepartement);
-        departementDto.setNom(nomRegion);
-        departementDto.addVille(villeDto);
+            // Créer le VilleDto avec toutes ses données
+            VilleDto villeDto = new VilleDto();
+            villeDto.setCodeRegion(codeRegion);
+            villeDto.setNomRegion(nomRegion);
+            villeDto.setCodeDepartement(codeDepartement);
+            villeDto.setCodeVille(codeCommune);
+            villeDto.setNom(nomCommune);
+            villeDto.setPopulationTotale(populationTotale);
 
-        // Log des détails de la ville extraite
-        System.out.println("Ville extraite : " + nomCommune + " dans le département : " + codeDepartement);
+            // Ajouter le VilleDto au DepartementDto
+            departementDto.setCode(codeDepartement);
+            departementDto.setNom(nomRegion);
+            departementDto.addVille(villeDto);
+
+            // Log des détails de la ville extraite
+           // System.out.println("Ville extraite : " + nomCommune + " dans le département : " + codeDepartement);
+
+        } catch (NumberFormatException e) {
+            System.err.println("Erreur de parsing de la population pour la ligne : " + ligne);
+            e.printStackTrace();
+        }
     }
 }

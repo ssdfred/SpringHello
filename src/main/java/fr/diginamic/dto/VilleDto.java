@@ -1,7 +1,10 @@
 package fr.diginamic.dto;
 
 public class VilleDto {
-    private String codeRegion;
+	private int id;
+	
+
+	private String codeRegion;
     private String nomRegion;
     private String codeDepartement;
     private String codeVille;
@@ -9,9 +12,33 @@ public class VilleDto {
     private int populationTotale;
     private DepartementDto departement;
 
+    // Constructor
+    public VilleDto(String codeRegion, String nomRegion, String codeDepartement, String codeVille, String nom, int populationTotale, DepartementDto departement) {
+    	this.codeRegion = codeRegion;
+        this.nomRegion = nomRegion;
+        this.codeDepartement = codeDepartement;
+        this.codeVille = codeVille;
+        this.nom = nom;
+        this.populationTotale = populationTotale;
+        this.departement = departement;
+    }
     // Getters and Setters
 
-    public String getCodeRegion() {
+  
+    public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public VilleDto() {
+	
+	}
+
+	public String getCodeRegion() {
         return codeRegion;
     }
 

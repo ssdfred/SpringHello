@@ -33,7 +33,7 @@ public class RecensementUtils {
             }
 
             for (String ligne : lignes) {
-                System.out.println("Traitement de la ligne : " + ligne);
+               // System.out.println("Traitement de la ligne : " + ligne);
                 parseurVille.ajoutLigne(departementDto, ligne);
             }
             return departementDto;

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Liste des Utilisateurs</title>
+  
+</head>
+<body>
+    <h1>Liste des Utilisateurs</h1>
+<!--	<h3>Profil utilisateur</h3>-->
+<!--	<ul>-->
+<!--		<li th:text="Username : '+${authentication.usernames}">Username-->
+			
+<!--		</li>-->
+<!--		<li th:text="Authorities : '+${authentication.authorities}">Authorities-->
+				
+<!--			</li-->
+<!--	</ul>-->
+    <a th:href="@{/users/create}">Créer un nouvel utilisateur</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom d'utilisateur</th>
+                <th>Rôles</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.authorities}"></td>
+                <td>
+                    <a th:href="@{/users/delete/{username}(username=${user.username})}">Supprimer</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

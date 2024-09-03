@@ -4,13 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DepartementDto {
+	private int id;
+	
     private String code;
     private String nom;
     private List<VilleDto> villes = new ArrayList<>();
 
     // Getters and Setters
+    public DepartementDto() {
+        // Default constructor
+    }
 
-    public String getCode() {
+  
+
+	public DepartementDto(String code, String nom) {
+		this.code= code;
+		this.nom = nom;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getCode() {
         return code;
     }
 
